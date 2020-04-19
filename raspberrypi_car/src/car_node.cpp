@@ -6,6 +6,7 @@
 #include "car_device.h"
 #include "smart_car.h"
 #include "car_node.h"
+#include "car_interface/msg/command_type.hpp"
 
 
 using namespace std::chrono_literals;
@@ -53,6 +54,8 @@ CarNode::CarNode()
     rclcpp::QoS qos(rclcpp::KeepLast(100), rmw_qos_profile_sensor_data);
     parameter_event_sub_ = this->create_subscription<rcl_interfaces::msg::ParameterEvent>(
     "/parameter_events", qos, std::bind(&CarNode::parameter_event_callback, this, std::placeholders::_1));
+
+    cmd_srv_ = this->create_service<car_interface::srv::Command>("cmd_srv", std::bind(&CarNode::handle_command, this));
 
     std::string node_name(this->get_name());
     servo_act_ = rclcpp_action::create_server<car_interface::action::RotateServo>(
@@ -104,7 +107,7 @@ void CarNode::ts_pub_callback()
     ts_pub_->publish(message);   
 }
 
-void CarNode::parameter_event_callback(const rcl_interfaces::msg::ParameterEvent::SharedPtr event) 
+void CarNode::parameter_event_callback(const rcl_interfaces::msg::ParameterEvent::SharedPtr event) const
 {
     if (event->node == this->get_fully_qualified_name())
     {
@@ -134,6 +137,51 @@ void CarNode::parameter_event_callback(const rcl_interfaces::msg::ParameterEvent
                 SmartCar::Instance().set_led(DEVICE_LED_BLUE, changed_parameter.value.integer_value);
             }
         }
+    }
+}
+
+void CarNode::handle_command(const std::shared_ptr<car_interface::srv::Command::Request> request,
+        std::shared_ptr<car_interface::srv::Command::Response> response)
+{
+    response->result = 0;
+    switch(request->type)
+    {
+        case car_interface::msg::CommandType::CAR_CMD_SPEED:
+            SmartCar::Instance().set_speed(request->value);            
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_GO:
+            SmartCar::Instance().forward();
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_BACK:
+            SmartCar::Instance().back();
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_TURN_LEFT:
+            SmartCar::Instance().turn_left();
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_TURN_RIGHT:
+            SmartCar::Instance().turn_right();
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_SPIN_LEFT:
+            SmartCar::Instance().spin_left();
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_SPIN_RIGHT:
+            SmartCar::Instance().spin_right();
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_STOP:
+            SmartCar::Instance().stop();
+            break;
+        case car_interface::msg::CommandType::SERVO_CMD_US_H:
+            SmartCar::Instance().set_servo_angle(DEVICE_US_H_SERVO, request->value);
+            break;
+        case car_interface::msg::CommandType::SERVO_CMD_CAMERA_H:
+            SmartCar::Instance().set_servo_angle(DEVICE_CAMERA_H_SERVO, request->value);
+            break;
+        case car_interface::msg::CommandType::SERVO_CMD_CAMERA_V:
+            SmartCar::Instance().set_servo_angle(DEVICE_CAMERA_V_SERVO, request->value);
+            break;
+        default:
+            response->result = -1;
+            break;
     }
 }
 

@@ -12,7 +12,7 @@ class SmartCar
 
     bool init();
     void set_delay(unsigned int millis);
-    void set_speed(unsigned int speed);
+    void set_speed(float rate);
     void set_led(int id, int val);
     void set_color_led(bool on);
     void set_servo_angle(int id, float angle);

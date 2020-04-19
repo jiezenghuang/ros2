@@ -22,6 +22,8 @@ find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/MoveCar.action"
   "action/RotateServo.action"
+  "msg/CommandType.msg"
+  "srv/Command.srv"
  )
  
 # uncomment the following section in order to fill in

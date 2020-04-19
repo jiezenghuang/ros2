@@ -125,15 +125,15 @@ void SmartCar::set_delay(unsigned int millis)
     cout << "delay " << millis << " milliseconds" << endl;
 }
 
-void SmartCar::set_speed(unsigned int data)
+void SmartCar::set_speed(float rate)
 {
-    if(speed <= MOTOR_PWM_RANGE)
+    if(0f > rate || rate > 1.0f)
+        cerr << "car speed rate between 0 ~ 1" << endl;
+    else
     {
-        speed = data;
+        speed = MOTOR_PWM_RANGE * rate;
         cout << "car speed set to " << speed << endl;
     }
-    else
-        cerr << "car speed must between 0 ~ " << MOTOR_PWM_RANGE << endl;
 }
 
 void led_light(bool red, bool green, bool blue)
