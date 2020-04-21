@@ -100,6 +100,10 @@ bool SmartCar::init()
     softPwmCreate(DEVICE_RIGHT_MOTOR_PWM, 0, MOTOR_PWM_RANGE);
     softPwmCreate(DEVICE_LEFT_MOTOR_PWM, 0, MOTOR_PWM_RANGE);
 
+    softPwmCreate(DEVICE_US_H_SERVO, SERVO_PWM_RANGE / 2, SERVO_PWM_RANGE);
+    softPwmCreate(DEVICE_CAMERA_H_SERVO, SERVO_PWM_RANGE / 2, SERVO_PWM_RANGE);
+    softPwmCreate(DEVICE_CAMERA_V_SERVO, SERVO_PWM_RANGE / 2, SERVO_PWM_RANGE);
+
     digitalWrite(DEVICE_LED_RED, LOW);
     digitalWrite(DEVICE_LED_GREEN, LOW);
     digitalWrite(DEVICE_LED_BLUE, LOW);
@@ -194,17 +198,19 @@ void SmartCar::set_servo_angle(int id, float angle)
     
     if(id == DEVICE_US_H_SERVO || id == DEVICE_CAMERA_H_SERVO || id == DEVICE_CAMERA_V_SERVO)
     {
-        //int pluse_width = angle * (SERVO_PWM_H - SERVO_PWM_L) / 180  + SERVO_PWM_L;
-        int pluse_width = (1.0 + angle / 45) * 500;
-        digitalWrite(id, HIGH);
-        delayMicroseconds(pluse_width);
-        digitalWrite(id, LOW);
-        delayMicroseconds(20000 - pluse_width);
+        int pluse = angle * (SERVO_PWM_H - SERVO_PWM_L) / 180  + SERVO_PWM_L;  
+        softPwmWrite(id, pluse);      
+        // int pluse_width = (1.0 + angle / 45) * 500;
+        // digitalWrite(id, HIGH);
+        // delayMicroseconds(pluse_width);
+        // digitalWrite(id, LOW);
+        // delayMicroseconds(20000 - pluse_width);
 
         switch (id)
         {
             case DEVICE_US_H_SERVO:
                 us_servo_angle = angle;
+                
                 break;
             case DEVICE_CAMERA_H_SERVO:
                 ch_servo_angle = angle;
