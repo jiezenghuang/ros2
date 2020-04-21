@@ -28,6 +28,9 @@ class TeleopCar : public rclcpp::Node
     TeleopCar();
     ~TeleopCar() { machine_.stop();}
     
+    void run();
+    rclcpp::Client<car_interface::srv::Command>::SharedPtr teleop_client;
+
     private:        
     StateMachine machine_;
     CarStatus status_;
@@ -43,8 +46,7 @@ class TeleopCar : public rclcpp::Node
 
     rclcpp::Subscription<std_msgs::msg::Int32MultiArray>::SharedPtr ts_sub_;
     void ts_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg);
-
-    rclcpp::Client<car_interface::srv::Command>::SharedPtr teleop_client_;
+    
     void async_send_request(std::shared_ptr<car_interface::srv::Command::Request> request);
     void handle_service_response(const rclcpp::Client<car_interface::srv::Command>::SharedFuture future);
 
