@@ -19,12 +19,21 @@ find_package(car_interface REQUIRED)
 
 add_executable(teleop src/teleop.cpp src/teleop_car.cpp)
 
-ament_target_dependencies(car 
+ament_target_dependencies(teleop 
   rclcpp 
   rclcpp_action
   std_msgs
   car_interface
 )
+
+target_include_directories(teleop PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+
+install(TARGETS teleop
+  EXPORT export_${PROJECT_NAME}
+  DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
