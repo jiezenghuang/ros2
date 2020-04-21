@@ -55,7 +55,8 @@ CarNode::CarNode()
     parameter_event_sub_ = this->create_subscription<rcl_interfaces::msg::ParameterEvent>(
     "/parameter_events", qos, std::bind(&CarNode::parameter_event_callback, this, std::placeholders::_1));
 
-    cmd_srv_ = this->create_service<car_interface::srv::Command>("cmd_srv", std::bind(&CarNode::handle_command, this));
+    cmd_srv_ = this->create_service<car_interface::srv::Command>("cmd_srv", 
+        std::bind(&CarNode::handle_command, this, std::placeholders::_1, std::placeholders::_2));
 
     std::string node_name(this->get_name());
     servo_act_ = rclcpp_action::create_server<car_interface::action::RotateServo>(
