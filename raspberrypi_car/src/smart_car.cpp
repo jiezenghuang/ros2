@@ -320,11 +320,11 @@ void SmartCar::stop()
     {
         digitalWrite(DEVICE_RIGHT_MOTOR_GO, LOW);
         digitalWrite(DEVICE_RIGHT_MOTOR_BACK, LOW);
-        softPwmWrite(right_motor_pwm, 0);
+        softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, 0);
 
         digitalWrite(DEVICE_LEFT_MOTOR_GO, LOW);
         digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
-        softPwmWrite(right_motor_pwm, 0);
+        softPwmWrite(DEVICE_LEFT_MOTOR_PWM, 0);
         delay(CONTROL_DELAY);
     }
 }
