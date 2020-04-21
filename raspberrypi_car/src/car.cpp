@@ -9,7 +9,6 @@ int main(int argc, char ** argv)
   if(!SmartCar::Instance().init())
   {
       RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "car init fail, exit...");
-      rclcpp::shutdown();
       return -1;
   }
   RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "car start up finish");
