@@ -30,6 +30,7 @@ target_include_directories(teleop PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+target_link_libraries(teleop pthread)
 
 install(TARGETS teleop
   EXPORT export_${PROJECT_NAME}

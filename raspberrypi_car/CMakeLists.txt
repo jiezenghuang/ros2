@@ -35,12 +35,11 @@ ament_target_dependencies(car
   car_interface
 )
 
-target_link_libraries(car wiringPi pthread)
-
 target_include_directories(car PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+target_link_libraries(car wiringPi pthread)
 
 install(TARGETS car
   EXPORT export_${PROJECT_NAME}
