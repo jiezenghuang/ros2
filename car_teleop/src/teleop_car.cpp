@@ -25,12 +25,12 @@ enum CarAlphabet
     CAR_ALPHABET_OBSTACLE_BOTH
 };
 
-const int OBSTACLE_DETECT = 1;
-const int OBSTACLE_CLEAR = 0;
+const int OBSTACLE_DETECT = 0;
+const int OBSTACLE_CLEAR = 1;
 
-const float SPEED_MAX = 0.5;
-const float SPEED_MIN = 0.2;
-const float SPEED_FLAG = 0.3;
+const float SPEED_MAX = 0.3;
+const float SPEED_MIN = 0.1;
+const float SPEED_FLAG = 0.2;
 
 TeleopCar::TeleopCar()
     : Node("teleop")

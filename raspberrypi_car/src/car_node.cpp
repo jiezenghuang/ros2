@@ -148,27 +148,32 @@ void CarNode::handle_command(const std::shared_ptr<car_interface::srv::Command::
     switch(request->type)
     {
         case car_interface::msg::CommandType::CAR_CMD_SPEED:
-            SmartCar::Instance().set_speed(request->value);            
-            break;
         case car_interface::msg::CommandType::CAR_CMD_GO:
+            SmartCar::Instance().set_speed(request->value);  
             SmartCar::Instance().forward();
             break;
         case car_interface::msg::CommandType::CAR_CMD_BACK:
+            SmartCar::Instance().set_speed(request->value);  
             SmartCar::Instance().back();
             break;
         case car_interface::msg::CommandType::CAR_CMD_TURN_LEFT:
+            SmartCar::Instance().set_speed(request->value);  
             SmartCar::Instance().turn_left();
             break;
         case car_interface::msg::CommandType::CAR_CMD_TURN_RIGHT:
+            SmartCar::Instance().set_speed(request->value);  
             SmartCar::Instance().turn_right();
             break;
         case car_interface::msg::CommandType::CAR_CMD_SPIN_LEFT:
+            SmartCar::Instance().set_speed(request->value);  
             SmartCar::Instance().spin_left();
             break;
         case car_interface::msg::CommandType::CAR_CMD_SPIN_RIGHT:
+            SmartCar::Instance().set_speed(request->value);  
             SmartCar::Instance().spin_right();
             break;
         case car_interface::msg::CommandType::CAR_CMD_STOP:
+            SmartCar::Instance().set_speed(request->value);  
             SmartCar::Instance().stop();
             break;
         case car_interface::msg::CommandType::SERVO_CMD_US_H:
