@@ -5,27 +5,53 @@
 #include "std_msgs/msg/int32_multi_array.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
 #include "car_interface/srv/command.hpp"
+#include "state_machine.hpp"
+
+class CarStatus
+{
+    public:
+    int left_track_sensor_1;
+    int left_track_sensor_2;
+    int right_track_sensor_1;
+    int right_track_sensor_2;
+    int left_light_sensor;
+    int right_light_sensor;
+    int left_infrared_sensor;
+    int right_infrared_sensor;
+    float speed;
+    float distance;
+};
 
 class TeleopCar : rclcpp::Node
 {
     public:
     TeleopCar();
+    ~TeleopCar() { machine_.stop();}
 
-    private:    
+    private:        
+    StateMachine machine_;
+    CarStatus status_;
+
     rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr us_sub_;
-    void us_callback(const std_msgs::msg::Float32MultiArray::SharedPtr msg) const;
+    void us_callback(const std_msgs::msg::Float32MultiArray::SharedPtr msg);
 
     rclcpp::Subscription<std_msgs::msg::Int32MultiArray>::SharedPtr is_sub_;
-    void is_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg) const;
+    void is_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg);
 
     rclcpp::Subscription<std_msgs::msg::Int32MultiArray>::SharedPtr ls_sub_;
-    void ls_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg) const;
+    void ls_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg);
 
     rclcpp::Subscription<std_msgs::msg::Int32MultiArray>::SharedPtr ts_sub_;
-    void ts_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg) const;
+    void ts_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg);
 
     rclcpp::Client<car_interface::srv::Command>::SharedPtr cmd_cli_;
+    void async_send_request(std::shared_ptr<car_interface::srv::Command::Request> request);
 
+    std::shared_ptr<Alphabet> process_stop(const std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_go(const std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_back(const std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_turn_left(const std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_turn_right(const std::shared_ptr<Alphabet> alphabet);
 };
 
 #endif
