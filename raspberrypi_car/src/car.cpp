@@ -14,6 +14,7 @@ int main(int argc, char ** argv)
   RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "car start up finish");
 
   rclcpp::spin(std::make_shared<CarNode>());
+  SmartCar::Instance().stop();
   rclcpp::shutdown();
   return 0;
 }
