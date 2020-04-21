@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(car_teleop)
 
-# Default to C99
-if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 99)
-endif()
-
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
@@ -21,6 +16,15 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(car_interface REQUIRED)
+
+add_executable(teleop src/teleop.cpp src/teleop_car.cpp)
+
+ament_target_dependencies(car 
+  rclcpp 
+  rclcpp_action
+  std_msgs
+  car_interface
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

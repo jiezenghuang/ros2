@@ -43,7 +43,7 @@ TeleopCar::TeleopCar()
         std::bind(&TeleopCar::ls_callback, this, std::placeholders::_1));
     ts_sub_ = this->create_subscription<std_msgs::msg::Int32MultiArray>("track_sensor", 10,
         std::bind(&TeleopCar::ts_callback, this, std::placeholders::_1));
-    teleop_client = this->create_client<car_interface::srv::Command>("cmd_srv");
+    teleop_client_ = this->create_client<car_interface::srv::Command>("cmd_srv");
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_STOP, std::bind(&TeleopCar::process_stop, this, std::placeholders::_1)));
     machine_.add_state_transition(CAR_STATE_STOP, CAR_ALPHABET_FAIL, CAR_STATE_STOP);
@@ -127,16 +127,16 @@ void TeleopCar::ts_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg)
 
 void TeleopCar::async_send_request(std::shared_ptr<car_interface::srv::Command::Request> request)
 {
-    if(!teleop_client->service_is_ready() && !teleop_client->wait_for_service(1s))
+    if(!teleop_client_->service_is_ready() && !teleop_client_->wait_for_service(1s))
     {
         if (!rclcpp::ok()) {
         RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
         rclcpp::shutdown();
         }
-        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service %s not available, try next time again...", teleop_client->get_service_name());
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service %s not available, try next time again...", teleop_client_->get_service_name());
     }
 
-    auto result = teleop_client->async_send_request(request, std::bind(&TeleopCar::handle_service_response, this, std::placeholders::_1));
+    auto result = teleop_client_->async_send_request(request, std::bind(&TeleopCar::handle_service_response, this, std::placeholders::_1));
 }
 
 void TeleopCar::handle_service_response(const rclcpp::Client<car_interface::srv::Command>::SharedFuture future)
