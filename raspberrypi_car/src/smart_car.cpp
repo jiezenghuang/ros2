@@ -397,9 +397,9 @@ void SmartCar::shutdown()
     softPwmWrite(DEVICE_CAMERA_H_SERVO, 0);
     softPwmWrite(DEVICE_CAMERA_V_SERVO, 0);
 
-    digitalWrite(DEVICE_LED_RED, HIGH);
-    digitalWrite(DEVICE_LED_GREEN, HIGH);
-    digitalWrite(DEVICE_LED_BLUE, HIGH);
+    digitalWrite(DEVICE_LED_RED, LOW);
+    digitalWrite(DEVICE_LED_GREEN, LOW);
+    digitalWrite(DEVICE_LED_BLUE, LOW);
 
     digitalWrite(DEVICE_FAN, HIGH);
 }

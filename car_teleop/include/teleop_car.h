@@ -48,13 +48,13 @@ class TeleopCar : public rclcpp::Node
     void async_send_request(std::shared_ptr<car_interface::srv::Command::Request> request);
     void handle_service_response(const rclcpp::Client<car_interface::srv::Command>::SharedFuture future);
 
-    std::shared_ptr<Alphabet> process_stop(const std::shared_ptr<Alphabet> alphabet);
-    std::shared_ptr<Alphabet> process_go(const std::shared_ptr<Alphabet> alphabet);
-    std::shared_ptr<Alphabet> process_back(const std::shared_ptr<Alphabet> alphabet);
-    std::shared_ptr<Alphabet> process_turn_left(const std::shared_ptr<Alphabet> alphabet);
-    std::shared_ptr<Alphabet> process_turn_right(const std::shared_ptr<Alphabet> alphabet);
-    std::shared_ptr<Alphabet> process_spin_left(const std::shared_ptr<Alphabet> alphabet);
-    std::shared_ptr<Alphabet> process_spin_right(const std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_stop(std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_go(std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_back(std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_turn_left(std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_turn_right(std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_spin_left(std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_spin_right(std::shared_ptr<Alphabet> alphabet);
 };
 
 #endif

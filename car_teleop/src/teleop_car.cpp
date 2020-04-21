@@ -156,7 +156,7 @@ void TeleopCar::handle_service_response(const rclcpp::Client<car_interface::srv:
     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "response from service: %d", future.get()->result);
 }
 
-std::shared_ptr<Alphabet> TeleopCar::process_stop(const std::shared_ptr<Alphabet> alphabet)
+std::shared_ptr<Alphabet> TeleopCar::process_stop(std::shared_ptr<Alphabet> alphabet)
 {
     if(alphabet == nullptr)
     {
@@ -174,7 +174,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_stop(const std::shared_ptr<Alphabet
     }
 }
 
-std::shared_ptr<Alphabet> TeleopCar::process_go(const std::shared_ptr<Alphabet> alphabet)
+std::shared_ptr<Alphabet> TeleopCar::process_go(std::shared_ptr<Alphabet> alphabet)
 {
     if(alphabet == nullptr)
         return std::make_shared<Alphabet>(CAR_ALPHABET_ERROR);
@@ -209,7 +209,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_go(const std::shared_ptr<Alphabet> 
     return alphabet;
 }
 
-std::shared_ptr<Alphabet> TeleopCar::process_back(const std::shared_ptr<Alphabet> alphabet)
+std::shared_ptr<Alphabet> TeleopCar::process_back(std::shared_ptr<Alphabet> alphabet)
 {
     if(alphabet == nullptr)
         return std::make_shared<Alphabet>(CAR_ALPHABET_ERROR);
@@ -234,7 +234,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_back(const std::shared_ptr<Alphabet
     return alphabet;
 }
 
-std::shared_ptr<Alphabet> TeleopCar::process_turn_left(const std::shared_ptr<Alphabet> alphabet)
+std::shared_ptr<Alphabet> TeleopCar::process_turn_left(std::shared_ptr<Alphabet> alphabet)
 {
     if(alphabet == nullptr)
         return std::make_shared<Alphabet>(CAR_ALPHABET_ERROR);
@@ -259,7 +259,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_left(const std::shared_ptr<Alp
     return alphabet;
 }
 
-std::shared_ptr<Alphabet> TeleopCar::process_turn_right(const std::shared_ptr<Alphabet> alphabet)
+std::shared_ptr<Alphabet> TeleopCar::process_turn_right(std::shared_ptr<Alphabet> alphabet)
 {
     if(alphabet == nullptr)
         return std::make_shared<Alphabet>(CAR_ALPHABET_ERROR);
@@ -284,7 +284,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_right(const std::shared_ptr<Al
     return alphabet;
 }
 
-std::shared_ptr<Alphabet> TeleopCar::process_spin_left(const std::shared_ptr<Alphabet> alphabet)
+std::shared_ptr<Alphabet> TeleopCar::process_spin_left(std::shared_ptr<Alphabet> alphabet)
 {
     if(alphabet == nullptr)
         return std::make_shared<Alphabet>(CAR_ALPHABET_ERROR);
@@ -309,7 +309,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_spin_left(const std::shared_ptr<Alp
     return alphabet;
 }
 
-std::shared_ptr<Alphabet> TeleopCar::process_spin_right(const std::shared_ptr<Alphabet> alphabet)
+std::shared_ptr<Alphabet> TeleopCar::process_spin_right(std::shared_ptr<Alphabet> alphabet)
 {
     if(alphabet == nullptr)
         return std::make_shared<Alphabet>(CAR_ALPHABET_ERROR);
