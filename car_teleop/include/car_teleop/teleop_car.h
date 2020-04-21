@@ -22,11 +22,14 @@ class CarStatus
     float distance;
 };
 
-class TeleopCar : rclcpp::Node
+class TeleopCar : public rclcpp::Node
 {
     public:
     TeleopCar();
     ~TeleopCar() { machine_.stop();}
+
+    void start();
+    rclcpp::Client<car_interface::srv::Command>::SharedPtr teleop_client;
 
     private:        
     StateMachine machine_;
@@ -44,8 +47,8 @@ class TeleopCar : rclcpp::Node
     rclcpp::Subscription<std_msgs::msg::Int32MultiArray>::SharedPtr ts_sub_;
     void ts_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg);
 
-    rclcpp::Client<car_interface::srv::Command>::SharedPtr cmd_cli_;
     void async_send_request(std::shared_ptr<car_interface::srv::Command::Request> request);
+    void handle_service_response(const rclcpp::Client<car_interface::srv::Command>::SharedFuture future);
 
     std::shared_ptr<Alphabet> process_stop(const std::shared_ptr<Alphabet> alphabet);
     std::shared_ptr<Alphabet> process_go(const std::shared_ptr<Alphabet> alphabet);
