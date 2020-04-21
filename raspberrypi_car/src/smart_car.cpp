@@ -131,7 +131,7 @@ void SmartCar::set_delay(unsigned int millis)
 
 void SmartCar::set_speed(float rate)
 {
-    if(0f > rate || rate > 1.0f)
+    if(0 > rate || rate > 1.0f)
         cerr << "car speed rate between 0 ~ 1" << endl;
     else
     {
