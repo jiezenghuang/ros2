@@ -7,9 +7,8 @@
 #include "car_interface/srv/command.hpp"
 #include "state_machine.hpp"
 
-class CarStatus
+struct CarStatus
 {
-    public:
     int left_track_sensor_1;
     int left_track_sensor_2;
     int right_track_sensor_1;
@@ -18,7 +17,6 @@ class CarStatus
     int right_light_sensor;
     int left_infrared_sensor;
     int right_infrared_sensor;
-    float speed;
     float distance;
 };
 
@@ -55,6 +53,8 @@ class TeleopCar : public rclcpp::Node
     std::shared_ptr<Alphabet> process_back(const std::shared_ptr<Alphabet> alphabet);
     std::shared_ptr<Alphabet> process_turn_left(const std::shared_ptr<Alphabet> alphabet);
     std::shared_ptr<Alphabet> process_turn_right(const std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_spin_left(const std::shared_ptr<Alphabet> alphabet);
+    std::shared_ptr<Alphabet> process_spin_right(const std::shared_ptr<Alphabet> alphabet);
 };
 
 #endif

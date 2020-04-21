@@ -12,7 +12,6 @@ class SmartCar
 
     bool init();
     void set_delay(unsigned int millis);
-    void set_speed(float rate);
     void set_led(int id, int val);
     void set_color_led(bool on);
     void set_servo_angle(int id, float angle);
@@ -22,8 +21,8 @@ class SmartCar
     int get_infrared_sensor(int id);
     int get_light_sensor(int id);
     int get_track_sensor(int id);
-    void forward();
-    void back();
+    void go(float rate);
+    void back(float rate);
     void stop();
     void turn_left();
     void turn_right();

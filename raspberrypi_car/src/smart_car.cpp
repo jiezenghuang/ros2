@@ -23,6 +23,8 @@ const int SERVO_PWM_L = 5;
 const int SERVO_PWM_H = 25;
 const int MOTOR_PWM_RANGE = 100;
 
+const int CONTROL_DELAY = 20;
+
 const float DEFAULT_SERVO_ANGLE = 90;
 
 const int DEVICE_POWER_OR_BEE = 10;
@@ -100,9 +102,9 @@ bool SmartCar::init()
     softPwmCreate(DEVICE_RIGHT_MOTOR_PWM, 0, MOTOR_PWM_RANGE);
     softPwmCreate(DEVICE_LEFT_MOTOR_PWM, 0, MOTOR_PWM_RANGE);
 
-    softPwmCreate(DEVICE_US_H_SERVO, SERVO_PWM_RANGE / 2, SERVO_PWM_RANGE);
-    softPwmCreate(DEVICE_CAMERA_H_SERVO, SERVO_PWM_RANGE / 2, SERVO_PWM_RANGE);
-    softPwmCreate(DEVICE_CAMERA_V_SERVO, SERVO_PWM_RANGE / 2, SERVO_PWM_RANGE);
+    softPwmCreate(DEVICE_US_H_SERVO, 0, SERVO_PWM_RANGE);
+    softPwmCreate(DEVICE_CAMERA_H_SERVO, 0, SERVO_PWM_RANGE);
+    softPwmCreate(DEVICE_CAMERA_V_SERVO, 0, SERVO_PWM_RANGE);
 
     digitalWrite(DEVICE_LED_RED, LOW);
     digitalWrite(DEVICE_LED_GREEN, LOW);
@@ -110,34 +112,10 @@ bool SmartCar::init()
 
     digitalWrite(DEVICE_FAN, HIGH);
 
-    for(float i = 0; i < 5; ++i)
-    {
-        set_servo_angle(DEVICE_US_H_SERVO, DEFAULT_SERVO_ANGLE);
-        set_servo_angle(DEVICE_CAMERA_H_SERVO, DEFAULT_SERVO_ANGLE);
-        set_servo_angle(DEVICE_CAMERA_V_SERVO, DEFAULT_SERVO_ANGLE);
-    }
-
     is_init = true;
     cout << "smart car init sucess, current car speed is " << speed << endl;
 
     return true;
-}
-
-void SmartCar::set_delay(unsigned int millis)
-{
-    delay(millis);
-    cout << "delay " << millis << " milliseconds" << endl;
-}
-
-void SmartCar::set_speed(float rate)
-{
-    if(0 > rate || rate > 1.0f)
-        cerr << "car speed rate between 0 ~ 1" << endl;
-    else
-    {
-        speed = MOTOR_PWM_RANGE * rate;
-        cout << "car speed set to " << speed << endl;
-    }
 }
 
 void led_light(bool red, bool green, bool blue)
@@ -209,8 +187,7 @@ void SmartCar::set_servo_angle(int id, float angle)
         switch (id)
         {
             case DEVICE_US_H_SERVO:
-                us_servo_angle = angle;
-                
+                us_servo_angle = angle;                
                 break;
             case DEVICE_CAMERA_H_SERVO:
                 ch_servo_angle = angle;
@@ -259,7 +236,6 @@ float SmartCar::get_distance()
         auto duration = duration_cast<microseconds>(end - start);
         if(duration.count() > 30000)
         {
-            //cerr << "detact high fail, duration " << duration.count() << endl;
             return -1;
         }
 
@@ -272,7 +248,6 @@ float SmartCar::get_distance()
         auto duration = duration_cast<microseconds>(end - start);
         if(duration.count() > 30000)
         {
-            //cerr << "detact low fail, duration " << duration.count() << endl;
             return -1;
         }
     }
@@ -307,10 +282,11 @@ int SmartCar::get_track_sensor(int id)
         return -1;
 }
 
-void SmartCar::forward()
+void SmartCar::go(float rate)
 {
     if(is_init)
     {
+        speed = MOTOR_PWM_RANGE * rate;
         digitalWrite(DEVICE_RIGHT_MOTOR_GO, HIGH);
         digitalWrite(DEVICE_RIGHT_MOTOR_BACK, LOW);
         softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, speed);
@@ -318,14 +294,15 @@ void SmartCar::forward()
         digitalWrite(DEVICE_LEFT_MOTOR_GO, HIGH);
         digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
         softPwmWrite(DEVICE_LEFT_MOTOR_PWM, speed);    
-        cout << "car go forward" << endl;    
+        delay(CONTROL_DELAY);
     }
 }
 
-void SmartCar::back()
+void SmartCar::back(float rate)
 {
     if(is_init)
     {
+        speed = MOTOR_PWM_RANGE * rate;
         digitalWrite(DEVICE_RIGHT_MOTOR_GO, LOW);
         digitalWrite(DEVICE_RIGHT_MOTOR_BACK, HIGH);
         softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, speed);
@@ -333,7 +310,7 @@ void SmartCar::back()
         digitalWrite(DEVICE_LEFT_MOTOR_GO, LOW);
         digitalWrite(DEVICE_LEFT_MOTOR_BACK, HIGH);
         softPwmWrite(DEVICE_LEFT_MOTOR_PWM, speed);
-        cout << "car go back" << endl;
+        delay(CONTROL_DELAY);
     }
 }
 
@@ -343,13 +320,12 @@ void SmartCar::stop()
     {
         digitalWrite(DEVICE_RIGHT_MOTOR_GO, LOW);
         digitalWrite(DEVICE_RIGHT_MOTOR_BACK, LOW);
-        //softPwmWrite(right_motor_pwm, 0);
+        softPwmWrite(right_motor_pwm, 0);
 
         digitalWrite(DEVICE_LEFT_MOTOR_GO, LOW);
         digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
-        //softPwmWrite(right_motor_pwm, 0);
-
-        cout << "car stop" << endl;
+        softPwmWrite(right_motor_pwm, 0);
+        delay(CONTROL_DELAY);
     }
 }
 
@@ -359,13 +335,12 @@ void SmartCar::turn_left()
     {
         digitalWrite(DEVICE_RIGHT_MOTOR_GO, HIGH);
         digitalWrite(DEVICE_RIGHT_MOTOR_BACK, LOW);
-        softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, speed);
+        softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, speed / 2);
 
         digitalWrite(DEVICE_LEFT_MOTOR_GO, LOW);
         digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
         softPwmWrite(DEVICE_LEFT_MOTOR_PWM, 0);
-
-        cout << "car turn left" << endl;
+        delay(CONTROL_DELAY);
     }
 }
 
@@ -379,9 +354,8 @@ void SmartCar::turn_right()
 
         digitalWrite(DEVICE_LEFT_MOTOR_GO, HIGH);
         digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
-        softPwmWrite(DEVICE_LEFT_MOTOR_PWM, speed);
-
-        cout << "car turn right" << endl;
+        softPwmWrite(DEVICE_LEFT_MOTOR_PWM, speed / 2);
+        delay(CONTROL_DELAY);
     }
 }
 
@@ -391,13 +365,12 @@ void SmartCar::spin_left()
     {
         digitalWrite(DEVICE_RIGHT_MOTOR_GO, HIGH);
         digitalWrite(DEVICE_RIGHT_MOTOR_BACK, LOW);
-        softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, speed);
+        softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, speed / 2);
 
         digitalWrite(DEVICE_LEFT_MOTOR_GO, LOW);
         digitalWrite(DEVICE_LEFT_MOTOR_BACK, HIGH);
-        softPwmWrite(DEVICE_LEFT_MOTOR_PWM, speed);
-
-        cout << "car spin left" << endl;
+        softPwmWrite(DEVICE_LEFT_MOTOR_PWM, speed / 2);
+        delay(CONTROL_DELAY);
     }
 }
 
@@ -407,19 +380,26 @@ void SmartCar::spin_right()
     {
         digitalWrite(DEVICE_RIGHT_MOTOR_GO, LOW);
         digitalWrite(DEVICE_RIGHT_MOTOR_BACK, HIGH);
-        softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, speed);
+        softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, speed / 2);
 
         digitalWrite(DEVICE_LEFT_MOTOR_GO, HIGH);
         digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
-        softPwmWrite(DEVICE_LEFT_MOTOR_PWM, speed);
-
-        cout << "car spin right" << endl;
+        softPwmWrite(DEVICE_LEFT_MOTOR_PWM, speed / 2);
+        delay(CONTROL_DELAY);
     }
 }
 
 void SmartCar::shutdown()
 {
     stop();
-    //delay(500);
-    cout << "shutdown car" << endl;
+
+    softPwmWrite(DEVICE_US_H_SERVO, 0);
+    softPwmWrite(DEVICE_CAMERA_H_SERVO, 0);
+    softPwmWrite(DEVICE_CAMERA_V_SERVO, 0);
+
+    digitalWrite(DEVICE_LED_RED, HIGH);
+    digitalWrite(DEVICE_LED_GREEN, HIGH);
+    digitalWrite(DEVICE_LED_BLUE, HIGH);
+
+    digitalWrite(DEVICE_FAN, HIGH);
 }
