@@ -203,6 +203,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_go(std::shared_ptr<Alphabet> alphab
     else
     {
         request->value = SPEED_MAX;
+        alphabet->key = CAR_ALPHABET_OK
     }
 
     async_send_request(request);
@@ -249,7 +250,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_left(std::shared_ptr<Alphabet>
     else
     {
         request->type = car_interface::msg::CommandType::CAR_CMD_GO;
-        alphabet->key = CAR_ALPHABET_FAIL;
+        alphabet->key = CAR_ALPHABET_OK;
         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[turn left]obstacle on right side clear, %d", alphabet->key);
     }
 
@@ -274,7 +275,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_right(std::shared_ptr<Alphabet
     else
     {
         request->type = car_interface::msg::CommandType::CAR_CMD_GO;
-        alphabet->key = CAR_ALPHABET_FAIL;
+        alphabet->key = CAR_ALPHABET_OK;
         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[turn left]obstacle on left side clear, %d", alphabet->key);
     }
 
@@ -299,7 +300,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_spin_left(std::shared_ptr<Alphabet>
     else
     {
         request->type = car_interface::msg::CommandType::CAR_CMD_GO;
-        alphabet->key = CAR_ALPHABET_FAIL;
+        alphabet->key = CAR_ALPHABET_OK;
         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin left]obstacle on left side clear, %d", alphabet->key);
     }
 
@@ -324,7 +325,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_spin_right(std::shared_ptr<Alphabet
     else
     {
         request->type = car_interface::msg::CommandType::CAR_CMD_GO;
-        alphabet->key = CAR_ALPHABET_FAIL;
+        alphabet->key = CAR_ALPHABET_OK;
         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin right]obstacle on left side clear, %d", alphabet->key);
     }
 
