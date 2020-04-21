@@ -178,11 +178,6 @@ void SmartCar::set_servo_angle(int id, float angle)
     {
         int pluse = angle * (SERVO_PWM_H - SERVO_PWM_L) / 180  + SERVO_PWM_L;  
         softPwmWrite(id, pluse);      
-        // int pluse_width = (1.0 + angle / 45) * 500;
-        // digitalWrite(id, HIGH);
-        // delayMicroseconds(pluse_width);
-        // digitalWrite(id, LOW);
-        // delayMicroseconds(20000 - pluse_width);
 
         switch (id)
         {
@@ -238,7 +233,6 @@ float SmartCar::get_distance()
         {
             return -1;
         }
-
     }
 
     start = system_clock::now();

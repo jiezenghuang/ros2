@@ -53,35 +53,31 @@ void TeleopCar::run()
     machine_.add_state_transition(CAR_STATE_STOP, CAR_ALPHABET_OK, CAR_STATE_GO);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_GO, std::bind(&TeleopCar::process_go, this, std::placeholders::_1)));
-    machine_.add_state_transition(CAR_STATE_GO, CAR_ALPHABET_OBSTACLE_LEFT, CAR_STATE_SPIN_RIGHT);
-    machine_.add_state_transition(CAR_STATE_GO, CAR_ALPHABET_OBSTACLE_RIGHT, CAR_STATE_SPIN_LEFT);
-    machine_.add_state_transition(CAR_STATE_GO, CAR_ALPHABET_OBSTACLE_BOTH, CAR_STATE_BACK);
-    machine_.add_state_transition(CAR_STATE_GO, CAR_ALPHABET_OK, CAR_STATE_GO);
+    machine_.add_state_transition(CAR_STATE_GO, CAR_ALPHABET_OBSTACLE_LEFT, CAR_STATE_TURN_RIGHT);
+    machine_.add_state_transition(CAR_STATE_GO, CAR_ALPHABET_OBSTACLE_RIGHT, CAR_STATE_TURN_LEFT);
+    machine_.add_state_transition(CAR_STATE_GO, CAR_ALPHABET_OBSTACLE_BOTH, CAR_STATE_SPIN_LEFT);
     machine_.add_state_transition(CAR_STATE_GO, CAR_ALPHABET_ERROR, CAR_STATE_STOP);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_BACK, std::bind(&TeleopCar::process_back, this, std::placeholders::_1)));
-    machine_.add_state_transition(CAR_STATE_BACK, CAR_ALPHABET_FAIL, CAR_STATE_BACK);
-    machine_.add_state_transition(CAR_STATE_BACK, CAR_ALPHABET_OK, CAR_STATE_TURN_RIGHT);
+    machine_.add_state_transition(CAR_STATE_BACK, CAR_ALPHABET_OBSTACLE_LEFT, CAR_STATE_SPIN_RIGHT);
+    machine_.add_state_transition(CAR_STATE_BACK, CAR_ALPHABET_OBSTACLE_RIGHT, CAR_STATE_SPIN_LEFT);
+    machine_.add_state_transition(CAR_STATE_BACK, CAR_ALPHABET_OK, CAR_STATE_SPIN_RIGHT);
     machine_.add_state_transition(CAR_STATE_BACK, CAR_ALPHABET_ERROR, CAR_STATE_STOP);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_SPIN_LEFT, std::bind(&TeleopCar::process_spin_left, this, std::placeholders::_1)));
     machine_.add_state_transition(CAR_STATE_SPIN_LEFT, CAR_ALPHABET_OK, CAR_STATE_GO);
-    machine_.add_state_transition(CAR_STATE_SPIN_LEFT, CAR_ALPHABET_FAIL, CAR_STATE_SPIN_LEFT);
     machine_.add_state_transition(CAR_STATE_SPIN_LEFT, CAR_ALPHABET_ERROR, CAR_STATE_STOP);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_SPIN_RIGHT, std::bind(&TeleopCar::process_spin_right, this, std::placeholders::_1)));
     machine_.add_state_transition(CAR_STATE_SPIN_RIGHT, CAR_ALPHABET_OK, CAR_STATE_GO);
-    machine_.add_state_transition(CAR_STATE_SPIN_RIGHT, CAR_ALPHABET_FAIL, CAR_STATE_SPIN_RIGHT);
     machine_.add_state_transition(CAR_STATE_SPIN_RIGHT, CAR_ALPHABET_ERROR, CAR_STATE_STOP);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_TURN_LEFT, std::bind(&TeleopCar::process_turn_left, this, std::placeholders::_1)));
     machine_.add_state_transition(CAR_STATE_TURN_LEFT, CAR_ALPHABET_OK, CAR_STATE_GO);
-    machine_.add_state_transition(CAR_STATE_TURN_LEFT, CAR_ALPHABET_FAIL, CAR_STATE_TURN_LEFT);
     machine_.add_state_transition(CAR_STATE_TURN_LEFT, CAR_ALPHABET_ERROR, CAR_STATE_STOP);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_TURN_RIGHT, std::bind(&TeleopCar::process_turn_right, this, std::placeholders::_1)));
     machine_.add_state_transition(CAR_STATE_TURN_RIGHT, CAR_ALPHABET_OK, CAR_STATE_GO);
-    machine_.add_state_transition(CAR_STATE_TURN_RIGHT, CAR_ALPHABET_FAIL, CAR_STATE_TURN_RIGHT);
     machine_.add_state_transition(CAR_STATE_TURN_RIGHT, CAR_ALPHABET_ERROR, CAR_STATE_STOP);
 
     machine_.start(CAR_STATE_STOP);
@@ -160,11 +156,16 @@ std::shared_ptr<Alphabet> TeleopCar::process_stop(std::shared_ptr<Alphabet> alph
 {
     if(alphabet == nullptr)
     {
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[stop]car init, distance %f", status_.distance);
+        auto request = std::make_shared<car_interface::srv::Command::Request>();
+        request->type = car_interface::msg::CommandType::SERVO_CMD_US_H;
+        request->value = 90;
+        async_send_request(request);
         return std::make_shared<Alphabet>(CAR_ALPHABET_OK);
     }        
     else
     {
-        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[stop]car stop, %d", alphabet->key);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[stop]car stop, distance %f", status_.distance);
         auto request = std::make_shared<car_interface::srv::Command::Request>();
         request->type = car_interface::msg::CommandType::CAR_CMD_STOP;
         request->value = 0;
@@ -194,17 +195,17 @@ std::shared_ptr<Alphabet> TeleopCar::process_go(std::shared_ptr<Alphabet> alphab
     if(status_.left_infrared_sensor == OBSTACLE_DETECT && status_.left_infrared_sensor == OBSTACLE_DETECT)
     {
         alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
-        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[go]obstacle detected on both side, %d", alphabet->key);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[go]obstacle detected on both side, distance %f", status_.distance);
     }
     else if(status_.left_infrared_sensor == OBSTACLE_DETECT)
     {
         alphabet->key = CAR_ALPHABET_OBSTACLE_RIGHT;
-        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[go]obstacle detected on left side, %d", alphabet->key);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[go]obstacle detected on left side, distance %f", status_.distance);
     }
     else
     {
         alphabet->key = CAR_ALPHABET_OBSTACLE_LEFT;
-        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[go]obstacle detected on right side, %d", alphabet->key);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[go]obstacle detected on right side, distance %f", status_.distance);
     }
     return alphabet;
 }
@@ -229,17 +230,17 @@ std::shared_ptr<Alphabet> TeleopCar::process_back(std::shared_ptr<Alphabet> alph
     if(status_.left_infrared_sensor == OBSTACLE_DETECT)
     {  
         alphabet->key = CAR_ALPHABET_OBSTACLE_LEFT;
-        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[back]obstacle detected on left side, %d", alphabet->key);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[back]obstacle detected on left side, distance %f", status_.distance);
     }    
     else if(status_.right_infrared_sensor == OBSTACLE_DETECT)
     {
         alphabet->key = CAR_ALPHABET_OBSTACLE_RIGHT;
-        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[back]obstacle detected on right side, %d", alphabet->key);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[back]obstacle detected on right side, distance %f", status_.distance);
     }
     else
     {
         alphabet->key = CAR_ALPHABET_OK;
-        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[back]obstacle clear, %d", alphabet->key);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[back]obstacle on both side clear, distance %f", status_.distance);
     }
 
     return alphabet;
@@ -257,13 +258,13 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_left(std::shared_ptr<Alphabet>
         async_send_request(request);
     }
 
-    while(status_.right_infrared_sensor == OBSTACLE_DETECT)
+    while(status_.left_infrared_sensor == OBSTACLE_DETECT || status_.right_infrared_sensor == OBSTACLE_DETECT)
     {
         rclcpp::Rate(20ms).sleep();
     }
 
     alphabet->key = CAR_ALPHABET_OK;
-    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[turn left]obstacle on right side clear, %d", alphabet->key);
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[turn left]obstacle on both side clear, distance %f", status_.distance);
 
     return alphabet;
 }
@@ -280,13 +281,13 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_right(std::shared_ptr<Alphabet
         async_send_request(request);
     }
 
-    while(status_.left_infrared_sensor == OBSTACLE_DETECT)
+    while(status_.left_infrared_sensor == OBSTACLE_DETECT || status_.right_infrared_sensor == OBSTACLE_DETECT)
     {
         rclcpp::Rate(20ms).sleep();
     }
 
     alphabet->key = CAR_ALPHABET_OK;
-    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[turn left]obstacle on left side clear, %d", alphabet->key);
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[turn right]obstacle on both side clear, distance %f", status_.distance);
 
     return alphabet;
 }
@@ -303,13 +304,13 @@ std::shared_ptr<Alphabet> TeleopCar::process_spin_left(std::shared_ptr<Alphabet>
         async_send_request(request);
     }
 
-    while(status_.right_infrared_sensor == OBSTACLE_DETECT)
+    while(status_.left_infrared_sensor == OBSTACLE_DETECT || status_.right_infrared_sensor == OBSTACLE_DETECT)
     {
         rclcpp::Rate(20ms).sleep();
     }
 
     alphabet->key = CAR_ALPHABET_OK;
-    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin left]obstacle on left side clear, %d", alphabet->key);
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin left]obstacle on both side clear, distance %f", status_.distance);
 
     return alphabet;
 }
@@ -326,13 +327,13 @@ std::shared_ptr<Alphabet> TeleopCar::process_spin_right(std::shared_ptr<Alphabet
         async_send_request(request);
     }
 
-    if(status_.left_infrared_sensor == OBSTACLE_DETECT)
+    if(status_.left_infrared_sensor == OBSTACLE_DETECT || status_.right_infrared_sensor == OBSTACLE_DETECT)
     {
         rclcpp::Rate(20ms).sleep();
     }
 
     alphabet->key = CAR_ALPHABET_OK;
-    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin right]obstacle on left side clear, %d", alphabet->key);
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin right]obstacle on both side clear, distance %f", status_.distance);
 
     return alphabet;
 }

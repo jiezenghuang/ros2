@@ -15,11 +15,9 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    int status = 0;
     for(int i = 0; i < 100; ++i)
     {
-        std::cout << SmartCar::Instance().get_infrared_sensor(SENSOR_LEFT_INFRARED);
-        std::this_thread::sleep_for(20ms);
+        std::cout << SmartCar::Instance().get_distance << std::endl;
+        std::this_thread::sleep_for(200ms);
     }
-    std::cout << std::endl;
 }
