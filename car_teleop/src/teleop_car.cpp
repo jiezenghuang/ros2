@@ -130,16 +130,14 @@ void TeleopCar::ts_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg)
 
 void TeleopCar::async_send_request(std::shared_ptr<car_interface::srv::Command::Request> request)
 {
-    if(!teleop_client->service_is_ready() && !teleop_client->wait_for_service(1s))
+    if(teleop_client->service_is_ready())
     {
-        if (!rclcpp::ok()) {
-        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
-        rclcpp::shutdown();
-        }
-        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service %s not available, try next time again...", teleop_client->get_service_name());
+       auto result = teleop_client->async_send_request(request, std::bind(&TeleopCar::handle_service_response, this, std::placeholders::_1));
     }
-
-    auto result = teleop_client->async_send_request(request, std::bind(&TeleopCar::handle_service_response, this, std::placeholders::_1));
+    else
+    {
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service %s not available", teleop_client->get_service_name());
+    }
 }
 
 void TeleopCar::handle_service_response(const rclcpp::Client<car_interface::srv::Command>::SharedFuture future)

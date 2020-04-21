@@ -37,13 +37,13 @@ class CarNode : public rclcpp::Node
     void handle_command(const std::shared_ptr<car_interface::srv::Command::Request> request,
         std::shared_ptr<car_interface::srv::Command::Response> response);
 
-    rclcpp_action::Server<car_interface::action::RotateServo>::SharedPtr servo_act_;
-    rclcpp_action::GoalResponse act_handle_goal(const rclcpp_action::GoalUUID & uuid,
-        std::shared_ptr<const car_interface::action::RotateServo::Goal> goal);
-    void act_execute_goal(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle);
-    rclcpp_action::CancelResponse act_handle_cancel(
-        const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle);
-    void act_handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle);
+    // rclcpp_action::Server<car_interface::action::RotateServo>::SharedPtr servo_act_;
+    // rclcpp_action::GoalResponse act_handle_goal(const rclcpp_action::GoalUUID & uuid,
+    //     std::shared_ptr<const car_interface::action::RotateServo::Goal> goal);
+    // void act_execute_goal(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle);
+    // rclcpp_action::CancelResponse act_handle_cancel(
+    //     const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle);
+    // void act_handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle);
 
 };
 
