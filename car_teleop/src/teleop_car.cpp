@@ -42,7 +42,7 @@ TeleopCar::TeleopCar()
         std::bind(&TeleopCar::ls_callback, this, std::placeholders::_1));
     ts_sub_ = this->create_subscription<std_msgs::msg::Int32MultiArray>("track_sensor", 10,
         std::bind(&TeleopCar::ts_callback, this, std::placeholders::_1));
-    teleop_client = this->create_client<car_interface::srv::CommandArray>("cmd_srv");
+    teleop_client = this->create_client<car_interface::srv::CommandArray>("car/cmd_srv");
 }
 
 void TeleopCar::run()
