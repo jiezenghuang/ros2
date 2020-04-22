@@ -41,8 +41,6 @@ const int DEVICE_LEFT_MOTOR_GO = 28;
 const int DEVICE_LEFT_MOTOR_BACK = 29;
 
 SmartCar::SmartCar()
-    : is_init(false), speed(50), is_lighting(false), 
-    us_servo_angle(DEFAULT_SERVO_ANGLE), ch_servo_angle(DEFAULT_SERVO_ANGLE), cv_servo_angle(DEFAULT_SERVO_ANGLE)
 {}
 
 SmartCar::~SmartCar()
