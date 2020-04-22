@@ -65,7 +65,7 @@ class State
     std::map<int, int> transitions_;
     std::function<std::shared_ptr<Alphabet>(std::shared_ptr<Alphabet>)> execute_;
 
-    State(const State& s) {}
+    State(const State& ) {}
     State& operator=(const State& )
     {
         return *this;

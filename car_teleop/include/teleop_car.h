@@ -4,7 +4,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/int32_multi_array.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
-#include "car_interface/srv/command.hpp"
+#include "car_interface/srv/command_array.hpp"
 #include "state_machine.hpp"
 
 struct CarStatus
@@ -27,7 +27,7 @@ class TeleopCar : public rclcpp::Node
     ~TeleopCar() { machine_.stop();}
     
     void run();
-    rclcpp::Client<car_interface::srv::Command>::SharedPtr teleop_client;
+    rclcpp::Client<car_interface::srv::CommandArray>::SharedPtr teleop_client;
 
     private:        
     StateMachine machine_;
@@ -45,8 +45,8 @@ class TeleopCar : public rclcpp::Node
     rclcpp::Subscription<std_msgs::msg::Int32MultiArray>::SharedPtr ts_sub_;
     void ts_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg);
     
-    void async_send_request(std::shared_ptr<car_interface::srv::Command::Request> request);
-    void handle_service_response(const rclcpp::Client<car_interface::srv::Command>::SharedFuture future);
+    void async_send_request(std::shared_ptr<car_interface::srv::CommandArray::Request> request);
+    void handle_service_response(const rclcpp::Client<car_interface::srv::CommandArray>::SharedFuture future);
 
     std::shared_ptr<Alphabet> process_stop(std::shared_ptr<Alphabet> alphabet);
     std::shared_ptr<Alphabet> process_go(std::shared_ptr<Alphabet> alphabet);

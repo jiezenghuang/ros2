@@ -6,7 +6,7 @@
 #include "std_msgs/msg/int32_multi_array.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
 #include "car_interface/action/rotate_servo.hpp"
-#include "car_interface/srv/command.hpp"
+#include "car_interface/srv/command_array.hpp"
 
 class CarNode : public rclcpp::Node
 {
@@ -33,9 +33,9 @@ class CarNode : public rclcpp::Node
     rclcpp::Subscription<rcl_interfaces::msg::ParameterEvent>::SharedPtr parameter_event_sub_;
     void parameter_event_callback(const rcl_interfaces::msg::ParameterEvent::SharedPtr event) const;
 
-    rclcpp::Service<car_interface::srv::Command>::SharedPtr cmd_srv_;
-    void handle_command(const std::shared_ptr<car_interface::srv::Command::Request> request,
-        std::shared_ptr<car_interface::srv::Command::Response> response);
+    rclcpp::Service<car_interface::srv::CommandArray>::SharedPtr cmd_srv_;
+    void handle_command(const std::shared_ptr<car_interface::srv::CommandArray::Request> request,
+        std::shared_ptr<car_interface::srv::CommandArray::Response> response);
 
     // rclcpp_action::Server<car_interface::action::RotateServo>::SharedPtr servo_act_;
     // rclcpp_action::GoalResponse act_handle_goal(const rclcpp_action::GoalUUID & uuid,

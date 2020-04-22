@@ -7,7 +7,7 @@
 #include "smart_car.h"
 #include "car_node.h"
 #include "car_interface/msg/command_type.hpp"
-
+#include "rcl_interfaces/msg/parameter_value.hpp"
 
 using namespace std::chrono_literals;
 
@@ -56,7 +56,7 @@ CarNode::CarNode()
     "/parameter_events", qos, std::bind(&CarNode::parameter_event_callback, this, std::placeholders::_1));
 
     std::string node_name(this->get_name());
-    cmd_srv_ = this->create_service<car_interface::srv::Command>(node_name + "/cmd_srv", 
+    cmd_srv_ = this->create_service<car_interface::srv::CommandArray>(node_name + "/cmd_srv", 
         std::bind(&CarNode::handle_command, this, std::placeholders::_1, std::placeholders::_2));
 
     // std::string node_name(this->get_name());
@@ -142,46 +142,51 @@ void CarNode::parameter_event_callback(const rcl_interfaces::msg::ParameterEvent
     }
 }
 
-void CarNode::handle_command(const std::shared_ptr<car_interface::srv::Command::Request> request,
-        std::shared_ptr<car_interface::srv::Command::Response> response)
-{
-    response->result = 0;
-    switch(request->type)
+void CarNode::handle_command(const std::shared_ptr<car_interface::srv::CommandArray::Request> request,
+        std::shared_ptr<car_interface::srv::CommandArray::Response> response)
+{    
+    int result = 0;
+    for(auto command : request->commands)
     {
-        case car_interface::msg::CommandType::CAR_CMD_GO:
-            SmartCar::Instance().go(request->value);
-            break;
-        case car_interface::msg::CommandType::CAR_CMD_BACK:
-            SmartCar::Instance().back(request->value);
-            break;
-        case car_interface::msg::CommandType::CAR_CMD_TURN_LEFT:
-            SmartCar::Instance().turn_left();
-            break;
-        case car_interface::msg::CommandType::CAR_CMD_TURN_RIGHT:
-            SmartCar::Instance().turn_right();
-            break;
-        case car_interface::msg::CommandType::CAR_CMD_SPIN_LEFT:
-            SmartCar::Instance().spin_left();
-            break;
-        case car_interface::msg::CommandType::CAR_CMD_SPIN_RIGHT:
-            SmartCar::Instance().spin_right();
-            break;
-        case car_interface::msg::CommandType::CAR_CMD_STOP:
-            SmartCar::Instance().stop();
-            break;
-        case car_interface::msg::CommandType::SERVO_CMD_US_H:
-            SmartCar::Instance().set_servo_angle(DEVICE_US_H_SERVO, request->value);
-            break;
-        case car_interface::msg::CommandType::SERVO_CMD_CAMERA_H:
-            SmartCar::Instance().set_servo_angle(DEVICE_CAMERA_H_SERVO, request->value);
-            break;
-        case car_interface::msg::CommandType::SERVO_CMD_CAMERA_V:
-            SmartCar::Instance().set_servo_angle(DEVICE_CAMERA_V_SERVO, request->value);
-            break;
-        default:
-            response->result = -1;
-            break;
+        switch(command.type)
+        {
+            case car_interface::msg::CommandType::CAR_CMD_GO:
+                    SmartCar::Instance().go(command.value);
+                break;
+            case car_interface::msg::CommandType::CAR_CMD_BACK:
+                SmartCar::Instance().back(command.value);
+                break;
+            case car_interface::msg::CommandType::CAR_CMD_TURN_LEFT:
+                SmartCar::Instance().turn_left(command.value);
+                break;
+            case car_interface::msg::CommandType::CAR_CMD_TURN_RIGHT:
+                SmartCar::Instance().turn_right(command.value);
+                break;
+            case car_interface::msg::CommandType::CAR_CMD_SPIN_LEFT:
+                SmartCar::Instance().spin_left(command.value);
+                break;
+            case car_interface::msg::CommandType::CAR_CMD_SPIN_RIGHT:
+                SmartCar::Instance().spin_right(command.value);
+                break;
+            case car_interface::msg::CommandType::CAR_CMD_STOP:
+                SmartCar::Instance().stop();
+                break;
+            case car_interface::msg::CommandType::SERVO_CMD_US_H:
+                SmartCar::Instance().set_servo_angle(DEVICE_US_H_SERVO, command.value);
+                break;
+            case car_interface::msg::CommandType::SERVO_CMD_CAMERA_H:
+                SmartCar::Instance().set_servo_angle(DEVICE_CAMERA_H_SERVO, command.value);
+                break;
+            case car_interface::msg::CommandType::SERVO_CMD_CAMERA_V:
+                SmartCar::Instance().set_servo_angle(DEVICE_CAMERA_V_SERVO, command.value);
+                break;
+            default:
+                result = -1;
+                break;
+        }
+        response->results.push_back(result);
     }
+
 }
 
 // rclcpp_action::GoalResponse CarNode::act_handle_goal(const rclcpp_action::GoalUUID & uuid,
