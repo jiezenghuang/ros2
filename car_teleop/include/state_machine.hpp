@@ -11,13 +11,13 @@
 class Alphabet
 {
     public:
-    explicit Alphabet(int k, void* v = nullptr)
+    explicit Alphabet(int k, std::shared_ptr<void> v = nullptr)
         : key(k), value(v)
     {}
     virtual ~Alphabet() {}
 
     int key;
-    void* value;
+    std::shared_ptr<void> value;
 };
 
 class State
