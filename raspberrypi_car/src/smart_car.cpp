@@ -44,9 +44,7 @@ SmartCar::SmartCar()
 {}
 
 SmartCar::~SmartCar()
-{
-    is_init = false;
-}
+{}
 
 SmartCar::SmartCar(const SmartCar&)
 {}
