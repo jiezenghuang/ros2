@@ -259,7 +259,7 @@ void SmartCar::spin_left(float speed)
     softPwmWrite(DEVICE_LEFT_MOTOR_PWM, MOTOR_PWM_RANGE * speed);
 }
 
-void SmartCar::spin_right()
+void SmartCar::spin_right(float speed)
 {
     digitalWrite(DEVICE_RIGHT_MOTOR_GO, LOW);
     digitalWrite(DEVICE_RIGHT_MOTOR_BACK, HIGH);
