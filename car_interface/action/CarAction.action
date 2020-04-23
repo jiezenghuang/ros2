@@ -1,4 +1,4 @@
-int32 servo
+int32 type
 float32 thelta
 ---
 float32 delta

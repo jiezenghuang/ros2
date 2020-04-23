@@ -5,7 +5,7 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "std_msgs/msg/int32_multi_array.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
-#include "car_interface/action/rotate_servo.hpp"
+#include "car_interface/action/car_action.hpp"
 #include "car_interface/srv/command_array.hpp"
 
 class CarNode : public rclcpp::Node
@@ -33,17 +33,17 @@ class CarNode : public rclcpp::Node
     rclcpp::Subscription<rcl_interfaces::msg::ParameterEvent>::SharedPtr parameter_event_sub_;
     void parameter_event_callback(const rcl_interfaces::msg::ParameterEvent::SharedPtr event) const;
 
-    rclcpp::Service<car_interface::srv::CommandArray>::SharedPtr cmd_srv_;
+    rclcpp::Service<car_interface::srv::CommandArray>::SharedPtr car_srv_;
     void handle_command(const std::shared_ptr<car_interface::srv::CommandArray::Request> request,
         std::shared_ptr<car_interface::srv::CommandArray::Response> response);
 
-    // rclcpp_action::Server<car_interface::action::RotateServo>::SharedPtr servo_act_;
-    // rclcpp_action::GoalResponse act_handle_goal(const rclcpp_action::GoalUUID & uuid,
-    //     std::shared_ptr<const car_interface::action::RotateServo::Goal> goal);
-    // void act_execute_goal(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle);
-    // rclcpp_action::CancelResponse act_handle_cancel(
-    //     const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle);
-    // void act_handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle);
+    rclcpp_action::Server<car_interface::action::CarAction>::SharedPtr car_act_;
+    rclcpp_action::GoalResponse act_handle_goal(const rclcpp_action::GoalUUID & uuid,
+        std::shared_ptr<const car_interface::action::CarAction::Goal> goal);
+    void act_execute_goal(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::CarAction>> goal_handle);
+    rclcpp_action::CancelResponse act_handle_cancel(
+        const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::CarAction>> goal_handle);
+    void act_handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::CarAction>> goal_handle);
 
 };
 

@@ -7,6 +7,7 @@
 #include "smart_car.h"
 #include "car_node.h"
 #include "car_interface/msg/command_type.hpp"
+#include "car_interface/msg/command.hpp"
 #include "rcl_interfaces/msg/parameter_value.hpp"
 
 using namespace std::chrono_literals;
@@ -56,20 +57,19 @@ CarNode::CarNode()
     "/parameter_events", qos, std::bind(&CarNode::parameter_event_callback, this, std::placeholders::_1));
 
     std::string node_name(this->get_name());
-    cmd_srv_ = this->create_service<car_interface::srv::CommandArray>(node_name + "/cmd_srv", 
+    car_srv_ = this->create_service<car_interface::srv::CommandArray>(node_name + "/car_srv", 
         std::bind(&CarNode::handle_command, this, std::placeholders::_1, std::placeholders::_2));
 
-    // std::string node_name(this->get_name());
-    // servo_act_ = rclcpp_action::create_server<car_interface::action::RotateServo>(
-    //     this->get_node_base_interface(),
-    //     this->get_node_clock_interface(),
-    //     this->get_node_logging_interface(),
-    //     this->get_node_waitables_interface(),
-    //     node_name + "/action/rotate_servo",
-    //     std::bind(&CarNode::act_handle_goal, this, std::placeholders::_1, std::placeholders::_2),
-    //     std::bind(&CarNode::act_handle_cancel, this, std::placeholders::_1),
-    //     std::bind(&CarNode::act_handle_accepted, this, std::placeholders::_1)
-    // );
+    car_act_ = rclcpp_action::create_server<car_interface::action::CarAction>(
+        this->get_node_base_interface(),
+        this->get_node_clock_interface(),
+        this->get_node_logging_interface(),
+        this->get_node_waitables_interface(),
+        node_name + "/car_act",
+        std::bind(&CarNode::act_handle_goal, this, std::placeholders::_1, std::placeholders::_2),
+        std::bind(&CarNode::act_handle_cancel, this, std::placeholders::_1),
+        std::bind(&CarNode::act_handle_accepted, this, std::placeholders::_1)
+    );
 }
 
 void CarNode::us_pub_callback()
@@ -189,66 +189,93 @@ void CarNode::handle_command(const std::shared_ptr<car_interface::srv::CommandAr
 
 }
 
-// rclcpp_action::GoalResponse CarNode::act_handle_goal(const rclcpp_action::GoalUUID & uuid,
-//         std::shared_ptr<const car_interface::action::RotateServo::Goal> goal)
-// {
-//     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received rotate servo request with id %d, angle %f", goal->servo, goal->thelta);
-//     if(goal->servo == DEVICE_US_H_SERVO || goal->servo == DEVICE_CAMERA_H_SERVO || goal->servo == DEVICE_CAMERA_V_SERVO
-//         && goal->thelta >= 0 && goal->thelta <= 180)
-//         return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
-//     else
-//         return rclcpp_action::GoalResponse::REJECT;
-// }
+rclcpp_action::GoalResponse CarNode::act_handle_goal(const rclcpp_action::GoalUUID & uuid,
+        std::shared_ptr<const car_interface::action::CarAction::Goal> goal)
+{
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received action %d, thelta %f", goal->type, goal->thelta);
 
-// void CarNode::act_execute_goal(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle)
-// {
-//     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Executing goal");
-//     const auto goal = goal_handle->get_goal();
-//     auto feedback = std::make_shared<car_interface::action::RotateServo::Feedback>();
-//     float angle = SmartCar::Instance().get_servo_angle(goal->servo);    
-//     float delta = 0;
-//     //rclcpp::Rate loop_rate(30 * 1000 * 1000);
+    rclcpp_action::GoalResponse response = rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+    switch (goal->type)
+    {
+        case car_interface::msg::CommandType::CAR_CMD_GO:            
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_BACK:            
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_TURN_LEFT:            
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_TURN_RIGHT:            
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_SPIN_LEFT:            
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_SPIN_RIGHT:            
+            break;
+        case car_interface::msg::CommandType::CAR_CMD_STOP:            
+            break;
+        case car_interface::msg::CommandType::SERVO_CMD_US_H:            
+            break;
+        case car_interface::msg::CommandType::SERVO_CMD_CAMERA_H:            
+            break;
+        case car_interface::msg::CommandType::SERVO_CMD_CAMERA_V:            
+            break;
+        default:
+            response = rclcpp_action::GoalResponse::REJECT;
+            break;
+    }
+    return response;
+}
+
+void CarNode::act_execute_goal(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::CarAction>> goal_handle)
+{
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Executing goal");
+    const auto goal = goal_handle->get_goal();
+    auto feedback = std::make_shared<car_interface::action::CarAction::Feedback>();
+    // float angle = SmartCar::Instance().get_servo_angle(goal->servo);    
+    // float delta = 0;
     
-//     auto result = std::make_shared<car_interface::action::RotateServo::Result>();
-//     while (abs(goal->thelta - angle - delta) > 0.1 && rclcpp::ok())
-//     {
-//         if(goal_handle->is_canceling())
-//         {            
-//             result->delta = abs(delta);
-//             goal_handle->canceled(result);
-//             RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Canceled goal");
-//             return;
-//         }
+    
+    auto result = std::make_shared<car_interface::action::CarAction::Result>();
+    while (rclcpp::ok())
+    {
+        if(goal_handle->is_canceling())
+        {            
+            //result->delta = abs(delta);
+            goal_handle->canceled(result);
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Canceled goal");
+            return;
+        }
 
-//         SmartCar::Instance().set_servo_angle(goal->servo, angle + delta);        
-//         if((angle + delta) < goal->thelta)
-//             ++delta;
+        //SmartCar::Instance().set_servo_angle(goal->servo, angle + delta);        
+        // if((angle + delta) < goal->thelta)
+        //     ++delta;
         
-//         if((angle + delta)  > goal->thelta)
-//             --delta;
+        // if((angle + delta)  > goal->thelta)
+        //     --delta;
         
-//         feedback->remaining = abs(goal->thelta - angle - delta);
-//         goal_handle->publish_feedback(feedback);
-//         //RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Publish feedback");
-//         //loop_rate.sleep();
-//     }
+        rclcpp::Rate(100ms).sleep();
+        
+        //feedback->remaining = abs(goal->thelta - angle - delta);
+        goal_handle->publish_feedback(feedback);
+        break;
+        //RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Publish feedback");
+        //loop_rate.sleep();
+    }
 
-//     if(rclcpp::ok())
-//     {
-//         result->delta = abs(delta);
-//         goal_handle->succeed(result);
-//         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Execute goal success");
-//     }
-// }
+    if(rclcpp::ok())
+    {
+        //result->delta = abs(delta);
+        goal_handle->succeed(result);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Execute goal success");
+    }
+}
 
-// rclcpp_action::CancelResponse CarNode::act_handle_cancel(
-//     const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle)
-// {
-//     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received request to cancel goal");
-//     return rclcpp_action::CancelResponse::ACCEPT;
-// }
+rclcpp_action::CancelResponse CarNode::act_handle_cancel(
+    const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::CarAction>> goal_handle)
+{
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received request to cancel goal");
+    return rclcpp_action::CancelResponse::ACCEPT;
+}
 
-// void CarNode::act_handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::RotateServo>> goal_handle)
-// {
-//     std::thread{std::bind(&CarNode::act_execute_goal, this, std::placeholders::_1), goal_handle}.detach();
-// }
+void CarNode::act_handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<car_interface::action::CarAction>> goal_handle)
+{
+    std::thread{std::bind(&CarNode::act_execute_goal, this, std::placeholders::_1), goal_handle}.detach();
+}

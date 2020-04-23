@@ -18,10 +18,10 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+#find_package(rcl_interfaces REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "action/MoveCar.action"
-  "action/RotateServo.action"
+  "action/CarAction.action"
   "msg/Command.msg"
   "msg/CommandType.msg"
   "srv/CommandArray.srv"

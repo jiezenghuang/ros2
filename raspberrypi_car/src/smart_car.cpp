@@ -142,11 +142,12 @@ float SmartCar::get_distance()
 
     auto start = system_clock::now();
     auto end = start;
+    const int max_respone_time = 30000;
     while(digitalRead(DEVICE_US_ECHO) != HIGH)
     {
         end = system_clock::now();
         auto duration = duration_cast<microseconds>(end - start);
-        if(duration.count() > 30000)
+        if(duration.count() > max_respone_time)
         {
             return -1;
         }
@@ -157,9 +158,9 @@ float SmartCar::get_distance()
     {
         end = system_clock::now();
         auto duration = duration_cast<microseconds>(end - start);
-        if(duration.count() > 30000)
+        if(duration.count() > max_respone_time)
         {
-            return -1;
+            return max_respone_time * 0.34 / 2;
         }
     }
 

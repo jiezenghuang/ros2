@@ -29,7 +29,7 @@ const int OBSTACLE_CLEAR = 1;
 
 const float SPEED_MAX = 0.3;
 const float SPEED_MIN = 0.1;
-const float SPEED_FLAG = 0.2;
+const float DISTANCE_SATE = 100;
 
 TeleopCar::TeleopCar()
     : Node("teleop")
@@ -199,7 +199,10 @@ std::shared_ptr<Alphabet> TeleopCar::process_go(std::shared_ptr<Alphabet> alphab
     
     if(status_.left_infrared_sensor == OBSTACLE_DETECT && status_.left_infrared_sensor == OBSTACLE_DETECT)
     {
-        alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
+        if(status_.distance > DISTANCE_SATE)
+            alphabet->key = CAR_ALPHABET_OBSTACLE_RIGHT;
+        else
+            alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[go]obstacle detected on both side, distance %f", status_.distance);
     }
     else if(status_.left_infrared_sensor == OBSTACLE_DETECT)
