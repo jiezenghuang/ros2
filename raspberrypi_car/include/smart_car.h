@@ -27,6 +27,9 @@ class SmartCar
     void spin_right(float speed);
     void shutdown();
 
+    const int WHEEL_TRACK = 157;
+    const int WHELL_RADIUS = 65;
+
     private:
     SmartCar();
     ~SmartCar();

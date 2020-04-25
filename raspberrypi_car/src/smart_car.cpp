@@ -231,22 +231,22 @@ void SmartCar::turn_left(float speed)
 {
     digitalWrite(DEVICE_RIGHT_MOTOR_GO, HIGH);
     digitalWrite(DEVICE_RIGHT_MOTOR_BACK, LOW);
-    softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, MOTOR_PWM_RANGE * speed);
+    softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, (1 + WHEEL_TRACK / 2) * MOTOR_PWM_RANGE * speed);
 
     digitalWrite(DEVICE_LEFT_MOTOR_GO, LOW);
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
-    softPwmWrite(DEVICE_LEFT_MOTOR_PWM, 0);
+    softPwmWrite(DEVICE_LEFT_MOTOR_PWM, (1 - WHEEL_TRACK / 2) * MOTOR_PWM_RANGE * speed);
 }
 
 void SmartCar::turn_right(float speed)
 {
     digitalWrite(DEVICE_RIGHT_MOTOR_GO, LOW);
     digitalWrite(DEVICE_RIGHT_MOTOR_BACK, LOW);
-    softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, 0);
+    softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, (1 - WHEEL_TRACK / 2) * MOTOR_PWM_RANGE * speed);
 
     digitalWrite(DEVICE_LEFT_MOTOR_GO, HIGH);
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
-    softPwmWrite(DEVICE_LEFT_MOTOR_PWM, MOTOR_PWM_RANGE * speed);
+    softPwmWrite(DEVICE_LEFT_MOTOR_PWM, (1 + WHEEL_TRACK / 2) * MOTOR_PWM_RANGE * speed);
 }
 
 void SmartCar::spin_left(float speed)
