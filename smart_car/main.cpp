@@ -2,8 +2,8 @@
 #include <thread>
 #include <chrono>
 
-#include "raspberrypi_car/include/car_device.h"
-#include "raspberrypi_car/include/smart_car.h"
+#include "car_device.h"
+#include "smart_car.h"
 
 using namespace std;
 using namespace std::chrono_literals;
