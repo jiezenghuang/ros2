@@ -171,7 +171,7 @@ float SmartCar::get_distance()
 
 int SmartCar::get_infrared_sensor(int id)
 {
-    if(id == SENSOR_LEFT_INFRARED || id == SENSOR_LEFT_INFRARED)
+    if(id == SENSOR_LEFT_INFRARED || id == SENSOR_RIGHT_INFRARED)
         return digitalRead(id);
     else
         return -1;
