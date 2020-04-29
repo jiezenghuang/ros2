@@ -28,7 +28,7 @@ class SmartCar
     void shutdown();
 
     const int WHEEL_TRACK = 157;
-    const int WHELL_RADIUS = 65;
+    const int WHELL_RADIUS = 66;
 
     private:
     SmartCar();

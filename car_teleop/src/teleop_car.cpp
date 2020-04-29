@@ -29,7 +29,7 @@ const int OBSTACLE_CLEAR = 1;
 
 const float SPEED_MAX = 0.3;
 const float SPEED_MIN = 0.1;
-const float DISTANCE_SATE = 100;
+const float DISTANCE_SATE = 200;
 
 TeleopCar::TeleopCar()
     : Node("teleop")
@@ -42,7 +42,7 @@ TeleopCar::TeleopCar()
         std::bind(&TeleopCar::ls_callback, this, std::placeholders::_1));
     ts_sub_ = this->create_subscription<std_msgs::msg::Int32MultiArray>("track_sensor", 10,
         std::bind(&TeleopCar::ts_callback, this, std::placeholders::_1));
-    teleop_client = this->create_client<car_interface::srv::CommandArray>("car/cmd_srv");
+    teleop_client = this->create_client<car_interface::srv::CommandArray>("car/car_srv");
 }
 
 void TeleopCar::run()

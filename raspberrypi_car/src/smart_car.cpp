@@ -26,6 +26,7 @@ const int MOTOR_PWM_RANGE = 100;
 const int CONTROL_DELAY = 20;
 
 const float DEFAULT_SERVO_ANGLE = 90;
+const float SPEED_DELTA = 0.3;
 
 const int DEVICE_POWER_OR_BEE = 10;
 
@@ -231,22 +232,22 @@ void SmartCar::turn_left(float speed)
 {
     digitalWrite(DEVICE_RIGHT_MOTOR_GO, HIGH);
     digitalWrite(DEVICE_RIGHT_MOTOR_BACK, LOW);
-    softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, (1 + WHEEL_TRACK / 2) * MOTOR_PWM_RANGE * speed);
+    softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, (1 + SPEED_DELTA) * MOTOR_PWM_RANGE * speed);
 
     digitalWrite(DEVICE_LEFT_MOTOR_GO, LOW);
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
-    softPwmWrite(DEVICE_LEFT_MOTOR_PWM, (1 - WHEEL_TRACK / 2) * MOTOR_PWM_RANGE * speed);
+    softPwmWrite(DEVICE_LEFT_MOTOR_PWM, (1 - SPEED_DELTA) * MOTOR_PWM_RANGE * speed);
 }
 
 void SmartCar::turn_right(float speed)
 {
     digitalWrite(DEVICE_RIGHT_MOTOR_GO, LOW);
     digitalWrite(DEVICE_RIGHT_MOTOR_BACK, LOW);
-    softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, (1 - WHEEL_TRACK / 2) * MOTOR_PWM_RANGE * speed);
+    softPwmWrite(DEVICE_RIGHT_MOTOR_PWM, (1 - SPEED_DELTA) * MOTOR_PWM_RANGE * speed);
 
     digitalWrite(DEVICE_LEFT_MOTOR_GO, HIGH);
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
-    softPwmWrite(DEVICE_LEFT_MOTOR_PWM, (1 + WHEEL_TRACK / 2) * MOTOR_PWM_RANGE * speed);
+    softPwmWrite(DEVICE_LEFT_MOTOR_PWM, (1 + SPEED_DELTA) * MOTOR_PWM_RANGE * speed);
 }
 
 void SmartCar::spin_left(float speed)
