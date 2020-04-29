@@ -27,8 +27,8 @@ enum CarAlphabet
 const int OBSTACLE_DETECT = 0;
 const int OBSTACLE_CLEAR = 1;
 
-const float SPEED_MAX = 0.3;
-const float SPEED_MIN = 0.1;
+const float SPEED_MAX = 0.6;
+const float SPEED_MIN = 0.4;
 const float DISTANCE_SATE = 200;
 
 TeleopCar::TeleopCar()

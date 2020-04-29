@@ -56,6 +56,8 @@ class State
     {
         if(execute_ != nullptr)
             return execute_(alphabet);
+        else
+            return nullptr;
     }
 
     protected:    
