@@ -47,10 +47,19 @@ CarNode::CarNode()
     led_blue_switch.description = "Switch of blue led";
     led_blue_switch.integer_range.push_back(range);
 
+    rcl_interfaces::msg::FloatingPointRange float_range;
+    float_range.from_value = 0;
+    float_range.to_value = 1;
+
+    rcl_interfaces::msg::ParameterDescriptor speed_delta;
+    speed_delta.description = "Speed delta for turnning";
+    speed_delta.floating_point_range.push_back(float_range);
+
     this->declare_parameter("fan_switch", rclcpp::ParameterValue(0), fan_switch);
     this->declare_parameter("led_red_switch", rclcpp::ParameterValue(0), led_red_switch);
     this->declare_parameter("led_green_switch", rclcpp::ParameterValue(0), led_green_switch);
     this->declare_parameter("led_blue_switch", rclcpp::ParameterValue(0), led_blue_switch);
+    this->declare_parameter("speed_delta", rclcpp::ParameterValue(0.2), speed_delta);
 
     rclcpp::QoS qos(rclcpp::KeepLast(100), rmw_qos_profile_sensor_data);
     parameter_event_sub_ = this->create_subscription<rcl_interfaces::msg::ParameterEvent>(
@@ -137,6 +146,12 @@ void CarNode::parameter_event_callback(const rcl_interfaces::msg::ParameterEvent
                 && changed_parameter.value.type == rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER)
             {
                 SmartCar::Instance().set_led(DEVICE_LED_BLUE, changed_parameter.value.integer_value);
+            }
+
+            if(changed_parameter.name == "speed_delta"
+                && changed_parameter.value.type == rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE)
+            {
+                SmartCar::Instance().SpeedDelta = changed_parameter.value.double_value;
             }
         }
     }

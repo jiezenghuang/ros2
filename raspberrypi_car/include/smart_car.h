@@ -29,6 +29,7 @@ class SmartCar
 
     const int WHEEL_TRACK = 157;
     const int WHELL_RADIUS = 66;
+    float SpeedDelta = 0.2;
 
     private:
     SmartCar();
