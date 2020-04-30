@@ -204,6 +204,13 @@ std::shared_ptr<Alphabet> TeleopCar::process_go(std::shared_ptr<Alphabet> alphab
     {
         rclcpp::Rate(100ms).sleep();
 
+        if(status_.distance < DISTANCE_SATE)
+        {
+            alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[go]obstacle too near, distance %f", status_.distance);
+            break;
+        }
+
         if(status_.left_infrared_sensor == OBSTACLE_DETECT && status_.right_infrared_sensor == OBSTACLE_DETECT)
         {
             alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
@@ -224,16 +231,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_go(std::shared_ptr<Alphabet> alphab
         }
         else
         {
-            if(status_.distance < DISTANCE_SATE)
-            {
-                alphabet->key = CAR_ALPHABET_OBSTACLE_LEFT;
-                RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[go]obstacle too near, distance %f", status_.distance);
-                break;
-            }
-            else
-            {
-                continue;
-            }
+            continue;
         }
     }while(true);
 
@@ -304,6 +302,12 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_left(std::shared_ptr<Alphabet>
     do
     {
         rclcpp::Rate(1s).sleep();
+        if(status_.distance < DISTANCE_SATE)
+        {
+            alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[turn left]obstacle too near, distance %f", status_.distance);
+            break;
+        }
 
         if(status_.left_infrared_sensor == OBSTACLE_DETECT && status_.right_infrared_sensor == OBSTACLE_DETECT)
         {
@@ -351,6 +355,12 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_right(std::shared_ptr<Alphabet
     do
     {
         rclcpp::Rate(1s).sleep();
+        if(status_.distance < DISTANCE_SATE)
+        {
+            alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[turn right]obstacle too near, distance %f", status_.distance);
+            break;
+        }
 
         if(status_.left_infrared_sensor == OBSTACLE_DETECT && status_.right_infrared_sensor == OBSTACLE_DETECT)
         {
@@ -398,6 +408,12 @@ std::shared_ptr<Alphabet> TeleopCar::process_spin_left(std::shared_ptr<Alphabet>
     do
     {
         rclcpp::Rate(1s).sleep();
+        if(status_.distance < DISTANCE_SATE)
+        {
+            alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin left]obstacle too near, distance %f", status_.distance);
+            break;
+        }
 
         if(status_.left_infrared_sensor == OBSTACLE_DETECT && status_.right_infrared_sensor == OBSTACLE_DETECT)
         {
@@ -445,29 +461,35 @@ std::shared_ptr<Alphabet> TeleopCar::process_spin_right(std::shared_ptr<Alphabet
     do
     {
         rclcpp::Rate(1s).sleep();
+        if(status_.distance < DISTANCE_SATE)
+        {
+            alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin right]obstacle too near, distance %f", status_.distance);
+            break;
+        }
 
         if(status_.left_infrared_sensor == OBSTACLE_DETECT && status_.right_infrared_sensor == OBSTACLE_DETECT)
         {
             alphabet->key = CAR_ALPHABET_OBSTACLE_BOTH;
-            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin left]obstacle detected on both side, distance %f", status_.distance);
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin right]obstacle detected on both side, distance %f", status_.distance);
             continue;
         }
         else if(status_.left_infrared_sensor == OBSTACLE_DETECT && status_.right_infrared_sensor != OBSTACLE_DETECT)
         {
             alphabet->key = CAR_ALPHABET_OBSTACLE_LEFT;
-            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin left]obstacle detected on left side, distance %f", status_.distance);
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin right]obstacle detected on left side, distance %f", status_.distance);
             continue;
         }
         else if(status_.left_infrared_sensor != OBSTACLE_DETECT && status_.right_infrared_sensor == OBSTACLE_DETECT)
         {
             alphabet->key = CAR_ALPHABET_OBSTACLE_RIGHT;
-            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin left]obstacle detected on right side, distance %f", status_.distance);
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin right]obstacle detected on right side, distance %f", status_.distance);
             break;
         }
         else
         {
             alphabet->key = CAR_ALPHABET_OK;
-            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin left]obstacle clear, distance %f", status_.distance);
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "[spin right]obstacle clear, distance %f", status_.distance);
             break;
         }
     }while(true);
