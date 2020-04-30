@@ -64,24 +64,28 @@ void TeleopCar::run()
     machine_.add_state_transition(CAR_STATE_BACK, CAR_ALPHABET_FAIL, CAR_STATE_STOP);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_SPIN_LEFT, std::bind(&TeleopCar::process_spin_left, this, std::placeholders::_1)));
+    machine_.add_state_transition(CAR_STATE_SPIN_LEFT, CAR_ALPHABET_OBSTACLE_BOTH, CAR_STATE_BACK);
     machine_.add_state_transition(CAR_STATE_SPIN_LEFT, CAR_ALPHABET_OBSTACLE_LEFT, CAR_STATE_SPIN_RIGHT);
     //machine_.add_state_transition(CAR_STATE_SPIN_LEFT, CAR_ALPHABET_OBSTACLE_RIGHT, CAR_STATE_SPIN_LEFT);
     machine_.add_state_transition(CAR_STATE_SPIN_LEFT, CAR_ALPHABET_OK, CAR_STATE_GO);
     machine_.add_state_transition(CAR_STATE_SPIN_LEFT, CAR_ALPHABET_FAIL, CAR_STATE_STOP);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_SPIN_RIGHT, std::bind(&TeleopCar::process_spin_right, this, std::placeholders::_1)));
+    machine_.add_state_transition(CAR_STATE_SPIN_RIGHT, CAR_ALPHABET_OBSTACLE_BOTH, CAR_STATE_BACK);
     //machine_.add_state_transition(CAR_STATE_SPIN_RIGHT, CAR_ALPHABET_OBSTACLE_LEFT, CAR_STATE_SPIN_RIGHT);
     machine_.add_state_transition(CAR_STATE_SPIN_RIGHT, CAR_ALPHABET_OBSTACLE_RIGHT, CAR_STATE_SPIN_LEFT);
     machine_.add_state_transition(CAR_STATE_SPIN_RIGHT, CAR_ALPHABET_OK, CAR_STATE_GO);
     machine_.add_state_transition(CAR_STATE_SPIN_RIGHT, CAR_ALPHABET_FAIL, CAR_STATE_STOP);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_TURN_LEFT, std::bind(&TeleopCar::process_turn_left, this, std::placeholders::_1)));
+    machine_.add_state_transition(CAR_STATE_TURN_LEFT, CAR_ALPHABET_OBSTACLE_BOTH, CAR_STATE_BACK);
     machine_.add_state_transition(CAR_STATE_TURN_LEFT, CAR_ALPHABET_OBSTACLE_LEFT, CAR_STATE_TURN_RIGHT);
     //machine_.add_state_transition(CAR_STATE_TURN_LEFT, CAR_ALPHABET_OBSTACLE_RIGHT, CAR_STATE_TURN_LEFT);
     machine_.add_state_transition(CAR_STATE_TURN_LEFT, CAR_ALPHABET_OK, CAR_STATE_GO);
     machine_.add_state_transition(CAR_STATE_TURN_LEFT, CAR_ALPHABET_FAIL, CAR_STATE_STOP);
 
     machine_.add_state(std::make_shared<State>(CAR_STATE_TURN_RIGHT, std::bind(&TeleopCar::process_turn_right, this, std::placeholders::_1)));
+    machine_.add_state_transition(CAR_STATE_TURN_RIGHT, CAR_ALPHABET_OBSTACLE_BOTH, CAR_STATE_BACK);
     //machine_.add_state_transition(CAR_STATE_TURN_RIGHT, CAR_ALPHABET_OBSTACLE_LEFT, CAR_STATE_TURN_RIGHT);
     machine_.add_state_transition(CAR_STATE_TURN_RIGHT, CAR_ALPHABET_OBSTACLE_RIGHT, CAR_STATE_TURN_LEFT);
     machine_.add_state_transition(CAR_STATE_TURN_RIGHT, CAR_ALPHABET_OK, CAR_STATE_GO);
@@ -247,7 +251,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_back(std::shared_ptr<Alphabet> alph
         auto request = std::make_shared<car_interface::srv::CommandArray::Request>();
         auto command = car_interface::msg::Command();
         command.type = car_interface::msg::CommandType::CAR_CMD_BACK;
-        command.value = SPEED_MIN;
+        command.value = SPEED_MAX;
         request->commands.push_back(command);  
         async_send_request(request);
     }
@@ -294,7 +298,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_left(std::shared_ptr<Alphabet>
         auto request = std::make_shared<car_interface::srv::CommandArray::Request>();
         auto command = car_interface::msg::Command();
         command.type = car_interface::msg::CommandType::CAR_CMD_TURN_LEFT;
-        command.value = SPEED_MIN;
+        command.value = SPEED_MAX;
         request->commands.push_back(command);  
         async_send_request(request);
     }
@@ -347,7 +351,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_turn_right(std::shared_ptr<Alphabet
         auto request = std::make_shared<car_interface::srv::CommandArray::Request>();
         auto command = car_interface::msg::Command();
         command.type = car_interface::msg::CommandType::CAR_CMD_TURN_RIGHT;
-        command.value = SPEED_MIN;
+        command.value = SPEED_MAX;
         request->commands.push_back(command);  
         async_send_request(request);
     }
@@ -400,7 +404,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_spin_left(std::shared_ptr<Alphabet>
         auto request = std::make_shared<car_interface::srv::CommandArray::Request>();
         auto command = car_interface::msg::Command();
         command.type = car_interface::msg::CommandType::CAR_CMD_SPIN_LEFT;
-        command.value = SPEED_MIN;
+        command.value = SPEED_MAX;
         request->commands.push_back(command); 
         async_send_request(request);
     }
@@ -453,7 +457,7 @@ std::shared_ptr<Alphabet> TeleopCar::process_spin_right(std::shared_ptr<Alphabet
         auto request = std::make_shared<car_interface::srv::CommandArray::Request>();
         auto command = car_interface::msg::Command();
         command.type = car_interface::msg::CommandType::CAR_CMD_SPIN_RIGHT;
-        command.value = SPEED_MIN;
+        command.value = SPEED_MAX;
         request->commands.push_back(command); 
         async_send_request(request);
     }
