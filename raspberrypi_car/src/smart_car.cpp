@@ -1,9 +1,9 @@
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 #include "car_device.h"
 #include "smart_car.h"
-#include "logger.hpp"
 
 #ifdef __cplusplus
 extern "C"
@@ -16,6 +16,7 @@ extern "C"
 #endif
 
 using namespace std;
+using namespace chrono;
 
 const int SERVO_PWM_RANGE = 200;
 const int SERVO_PWM_L = 5;
@@ -110,14 +111,14 @@ void SmartCar::set_led(int id, int val)
 {
     if(id == DEVICE_LED_RED || id == DEVICE_LED_GREEN || id == DEVICE_LED_BLUE)
     {
-        Logger::get_logger().debug("set led %d to %d", id, val);
+        std::cout << "set led " << id << " to " << val << std::endl;
         digitalWrite(id, val == 0 ? LOW : HIGH);
     }
 }
 
 void SmartCar::set_fan(int val)
 {
-    Logger::get_logger().debug("set fan %d", val);
+    std::cout << "set fan " << DEVICE_FAN << " to " << val << std::endl;
     val == 0 ? digitalWrite(DEVICE_FAN, HIGH) : digitalWrite(DEVICE_FAN, LOW);
 }
 
@@ -128,7 +129,7 @@ void SmartCar::set_servo_angle(int id, float angle)
     
     if(id == DEVICE_US_H_SERVO || id == DEVICE_CAMERA_H_SERVO || id == DEVICE_CAMERA_V_SERVO)
     {
-        Logger::get_logger().debug("set servo %d angle to %f", id, angle);
+        std::cout << "set servo " << id << " angle to " << angle << std::endl;
         int pluse = angle * (SERVO_PWM_H - SERVO_PWM_L) / 180  + SERVO_PWM_L;  
         softPwmWrite(id, pluse);      
     }
@@ -206,7 +207,7 @@ void SmartCar::go(float speed)
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
     softPwmWrite(DEVICE_LEFT_MOTOR_PWM, MOTOR_PWM_RANGE * speed);   
 
-    Logger::get_logger().debug("car go, left speed %d, right speed %d", MOTOR_PWM_RANGE * speed, MOTOR_PWM_RANGE * speed); 
+    std::cout << "car go, left speed " << MOTOR_PWM_RANGE * speed << ", right speed " << MOTOR_PWM_RANGE * speed << std::endl;
 }
 
 void SmartCar::back(float speed)
@@ -219,7 +220,7 @@ void SmartCar::back(float speed)
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, HIGH);
     softPwmWrite(DEVICE_LEFT_MOTOR_PWM, MOTOR_PWM_RANGE * speed);
 
-    Logger::get_logger().debug("car back, left speed %d, right speed %d", MOTOR_PWM_RANGE * speed, MOTOR_PWM_RANGE * speed); 
+    std::cout << "car back, left speed " << MOTOR_PWM_RANGE * speed << ", right speed " << MOTOR_PWM_RANGE * speed << std::endl;
 }
 
 void SmartCar::stop()
@@ -232,7 +233,7 @@ void SmartCar::stop()
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
     softPwmWrite(DEVICE_LEFT_MOTOR_PWM, 0);
 
-    Logger::get_logger().debug("car stop"); 
+    std::cout << "car stop" << std::endl;
 }
 
 void SmartCar::turn_left(float speed)
@@ -245,7 +246,7 @@ void SmartCar::turn_left(float speed)
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
     softPwmWrite(DEVICE_LEFT_MOTOR_PWM, MOTOR_PWM_RANGE * speed * (1 - SpeedDelta));
 
-    Logger::get_logger().debug("car turn left, left speed %d, right speed %d", MOTOR_PWM_RANGE * speed * (1 - SpeedDelta), MOTOR_PWM_RANGE * speed); 
+    std::cout << "car turn left, left speed " << MOTOR_PWM_RANGE * speed * (1 - SpeedDelta) << ", right speed " << MOTOR_PWM_RANGE * speed << std::endl;
 }
 
 void SmartCar::turn_right(float speed)
@@ -258,7 +259,7 @@ void SmartCar::turn_right(float speed)
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
     softPwmWrite(DEVICE_LEFT_MOTOR_PWM, MOTOR_PWM_RANGE * speed);
 
-    Logger::get_logger().debug("car turn right, left speed %d, right speed %d", MOTOR_PWM_RANGE * speed, MOTOR_PWM_RANGE * speed * (1 - SpeedDelta)); 
+    std::cout << "car turn right, left speed " << MOTOR_PWM_RANGE * speed << ", right speed " << MOTOR_PWM_RANGE * speed * (1 - SpeedDelta) << std::endl;
 }
 
 void SmartCar::spin_left(float speed)
@@ -271,7 +272,7 @@ void SmartCar::spin_left(float speed)
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, HIGH);
     softPwmWrite(DEVICE_LEFT_MOTOR_PWM, MOTOR_PWM_RANGE * speed);
 
-    Logger::get_logger().debug("car spin left, left speed %d, right speed %d", MOTOR_PWM_RANGE * speed, MOTOR_PWM_RANGE * speed); 
+    std::cout << "car spin left, left speed " << MOTOR_PWM_RANGE * speed << ", right speed " << MOTOR_PWM_RANGE * speed << std::endl;
 }
 
 void SmartCar::spin_right(float speed)
@@ -284,7 +285,7 @@ void SmartCar::spin_right(float speed)
     digitalWrite(DEVICE_LEFT_MOTOR_BACK, LOW);
     softPwmWrite(DEVICE_LEFT_MOTOR_PWM, MOTOR_PWM_RANGE * speed);
 
-    Logger::get_logger().debug("car spin right, left speed %d, right speed %d", MOTOR_PWM_RANGE * speed, MOTOR_PWM_RANGE * speed); 
+    std::cout << "car spin right, left speed " << MOTOR_PWM_RANGE * speed << ", right speed " << MOTOR_PWM_RANGE * speed << std::endl;
 }
 
 void SmartCar::shutdown()
@@ -301,5 +302,5 @@ void SmartCar::shutdown()
 
     digitalWrite(DEVICE_FAN, HIGH);
 
-    Logger::get_logger().debug("car shutdown");
+    std::cout << "car shutdown" << std::endl;
 }

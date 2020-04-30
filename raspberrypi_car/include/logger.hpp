@@ -10,7 +10,7 @@
 template<typename ... Args>
 std::string string_format( const char* format, Args ... args )
 {
-    size_t size = snprintf( nullptr, 0, format, args ... ) + 1; // Extra space for '\0'
+    size_t size = snprintf( nullptr, 0, format, args ...) + 1; // Extra space for '\0'
     if( size <= 0 ) { throw std::runtime_error( "Error during formatting." ); }
     std::unique_ptr<char[]> buf( new char[ size ] ); 
     snprintf( buf.get(), size, format, args ... );
@@ -35,13 +35,13 @@ public:
     void info(const char* format, ...)
     {
         va_list args;
-        write_log(Debug, string_format(format, args));
+        write_log(Info, string_format(format, args));
     }
 
     void error(const char* format, ...)
     {
         va_list args;
-        write_log(Debug, string_format(format, args));
+        write_log(Error, string_format(format, args));
     }
 
 private:
@@ -59,15 +59,19 @@ private:
     {
         std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         std::cout << std::put_time(std::localtime(&now), "[%F %T]");
+        std::cout << "[" << std::this_thread::get_id() << "]";
         switch(type)
         {
             case Debug:
                 std::cout << "[Debug]";
+                break;
             case Info:
                 std::cout << "[Info]";
+                break;
             case Error:
             default:
                 std::cout << "[Error]";
+                break;
         }
         std::cout << log << std::endl;
     }
